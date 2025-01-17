@@ -1,6 +1,5 @@
 const { body, validationResult } = require("express-validator");
 const Post = require("../models/post");
-const Comment = require("../models/comment");
 const asyncHandler = require("express-async-handler");
 const { DateTime } = require("luxon");
 const { JsonWebTokenError } = require("jsonwebtoken");
@@ -112,10 +111,9 @@ exports.post_post = [
   ];
 
   exports.post_detail = asyncHandler(async (req, res, next) => {
-    // Get details of post and all their comments (in parallel)
-    const [post, allCommentsForPost] = await Promise.all([
+    // Get details of posts
+    const [post] = await Promise.all([
       Post.findById(req.params.id).exec(),
-      Comment.find({ post: req.params.id }).exec(),
     ]);
   
     if (post === null) {
@@ -128,7 +126,6 @@ exports.post_post = [
     res.json({
       title: "Post Detail",
       post: post,
-      post_comments: allCommentsForPost,
     });
 });
 
